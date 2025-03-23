@@ -9,9 +9,14 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Install Heroku CLI
+        run: |
+          curl https://cli-assets.heroku.com/install.sh | sh
 
       - name: Login to Heroku
         env:
@@ -20,6 +25,8 @@ jobs:
           echo $HEROKU_API_KEY | docker login --username=_ --password-stdin registry.heroku.com
 
       - name: Deploy to Heroku
+        env:
+          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
         run: |
-          heroku git:remote -a ${{ secrets.HEROKU_APP_NAME }}
+          heroku git:remote -a $HEROKU_APP_NAME
           git push heroku main
